@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API DonVi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test API DonVi</h1>
+        
+        <h2>1. Tạo đơn vị mới</h2>
+        <form id="createForm">
+            <div class="form-group">
+                <label for="idDvi">ID Đơn vị (để trống để tự động tạo):</label>
+                <input type="number" id="idDvi" name="idDvi" placeholder="Để trống">
+            </div>
+            
+            <div class="form-group">
+                <label for="tenDvi">Tên Đơn vị:</label>
+                <input type="text" id="tenDvi" name="tenDvi" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="maCty">Mã Công ty:</label>
+                <input type="text" id="maCty" name="maCty" value="CT01">
+            </div>
+            
+            <button type="submit">Tạo Đơn vị</button>
+        </form>
+        
+        <div id="createResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>2. Lấy tất cả đơn vị</h2>
+        <button onclick="getAllDonVi()">Lấy tất cả đơn vị</button>
+        <div id="getAllResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>3. Lấy đơn vị theo ID</h2>
+        <div class="form-group">
+            <label for="getById">ID Đơn vị:</label>
+            <input type="number" id="getById" name="getById" value="1">
+        </div>
+        <button onclick="getDonViById()">Lấy đơn vị</button>
+        <div id="getByIdResult" class="result"></div>
+    </div>
+
+    <script>
+        // Tạo đơn vị mới
+        document.getElementById('createForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const data = {
+                idDvi: document.getElementById('idDvi').value || null,
+                tenDvi: document.getElementById('tenDvi').value,
+                maCty: document.getElementById('maCty').value
+            };
+            
+            fetch('http://localhost:8080/api/donvi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Lỗi khi tạo đơn vị');
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('createResult');
+                resultDiv.innerHTML = `
+                    <h3>Thành công!</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+                
+                // Reset form
+                document.getElementById('createForm').reset();
+                document.getElementById('maCty').value = 'CT01';
+            })
+            .catch(error => {
+                const resultDiv = document.getElementById('createResult');
+                resultDiv.innerHTML = `
+                    <h3>Lỗi!</h3>
+                    <p>${error.message}</p>
+                `;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            });
+        });
+
+        // Lấy tất cả đơn vị
+        function getAllDonVi() {
+            fetch('http://localhost:8080/api/donvi')
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Lỗi khi lấy danh sách đơn vị');
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('getAllResult');
+                resultDiv.innerHTML = `
+                    <h3>Danh sách đơn vị:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+            })
+            .catch(error => {
+                const resultDiv = document.getElementById('getAllResult');
+                resultDiv.innerHTML = `
+                    <h3>Lỗi!</h3>
+                    <p>${error.message}</p>
+                `;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            });
+        }
+
+        // Lấy đơn vị theo ID
+        function getDonViById() {
+            const id = document.getElementById('getById').value;
+            
+            fetch(`http://localhost:8080/api/donvi/${id}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Không tìm thấy đơn vị');
+                }
+            })
+            .then(data => {
+                const resultDiv = document.getElementById('getByIdResult');
+                resultDiv.innerHTML = `
+                    <h3>Thông tin đơn vị:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                resultDiv.className = 'result success';
+                resultDiv.style.display = 'block';
+            })
+            .catch(error => {
+                const resultDiv = document.getElementById('getByIdResult');
+                resultDiv.innerHTML = `
+                    <h3>Lỗi!</h3>
+                    <p>${error.message}</p>
+                `;
+                resultDiv.className = 'result error';
+                resultDiv.style.display = 'block';
+            });
+        }
+    </script>
+</body>
+</html>

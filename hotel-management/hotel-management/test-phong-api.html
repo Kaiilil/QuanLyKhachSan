@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Phong</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .btn-success { background-color: #28a745; }
+        .btn-warning { background-color: #ffc107; color: #212529; }
+        .btn-danger { background-color: #dc3545; }
+        .btn-info { background-color: #17a2b8; }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏨 Test API Phong - Hệ thống Quản lý Khách sạn</h1>
+        
+        <div class="grid">
+            <!-- XÓA hoặc ẨN form tạo phòng cơ bản -->
+            <!--<div>
+                <h2>1. Tạo phòng cơ bản</h2>
+                <form id="createBasicForm">
+                    <div class="form-group">
+                        <label for="tenPhong">Tên Phòng:</label>
+                        <input type="text" id="tenPhong" name="tenPhong" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="donVi">Đơn Vị:</label>
+                        <select id="donVi" name="donVi" class="donvi-select" required onchange="onDonViChange('donVi', 'idTang')">
+                            <option value="">-- Chọn đơn vị --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idTang">ID Tầng:</label>
+                        <select id="idTang" name="idTang" required>
+                            <option value="">-- Chọn tầng --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="idLoaiPhong">ID Loại Phòng:</label>
+                        <input type="number" id="idLoaiPhong" name="idLoaiPhong" value="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="trangThai">Trạng Thái:</label>
+                        <select id="trangThai" name="trangThai" required>
+                            <option value="Trống">Trống</option>
+                            <option value="Đang sử dụng">Đang sử dụng</option>
+                            <option value="Bảo trì">Bảo trì</option>
+                            <option value="Đã đặt">Đã đặt</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-success">Tạo Phòng</button>
+                </form>
+                <div id="createBasicResult" class="result"></div>
+            </div>-->
+            <div style="grid-column: 1 / span 2;">
+                <h2>1. Tạo phòng với ảnh</h2>
+                <form id="createWithImageForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="tenPhong2">Tên Phòng:</label>
+                        <input type="text" id="tenPhong2" name="tenPhong2" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="donVi2">Đơn Vị:</label>
+                        <select id="donVi2" name="donVi2" class="donvi-select" required onchange="onDonViChange('donVi2', 'idTang2')">
+                            <option value="">-- Chọn đơn vị --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="idTang2">ID Tầng:</label>
+                        <select id="idTang2" name="idTang2" required>
+                            <option value="">-- Chọn tầng --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="idLoaiPhong2">ID Loại Phòng:</label>
+                        <input type="number" id="idLoaiPhong2" name="idLoaiPhong2" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="trangThai2">Trạng Thái:</label>
+                        <select id="trangThai2" name="trangThai2" required>
+                            <option value="Trống">Trống</option>
+                            <option value="Đang sử dụng">Đang sử dụng</option>
+                            <option value="Bảo trì">Bảo trì</option>
+                            <option value="Đã đặt">Đã đặt</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="file">Ảnh Phòng:</label>
+                        <input type="file" id="file" name="file" accept="image/*" required>
+                        <img id="preview" class="image-preview" alt="Preview">
+                    </div>
+                    <button type="submit" class="btn-success">Tạo Phòng với Ảnh</button>
+                </form>
+                <div id="createWithImageResult" class="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>3. Xem thông tin phòng</h2>
+        <button onclick="getAllPhong()" class="btn-info">Lấy tất cả phòng</button>
+        <button onclick="getAllPhongDetail()" class="btn-info">Lấy chi tiết phòng</button>
+        
+        <div class="form-group">
+            <label for="getById">ID Phòng:</label>
+            <input type="number" id="getById" name="getById" value="1">
+        </div>
+        <button onclick="getPhongById()" class="btn-info">Lấy phòng theo ID</button>
+        <button onclick="getPhongDetailById()" class="btn-info">Lấy chi tiết phòng theo ID</button>
+        
+        <div id="viewResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>4. Cập nhật và xóa phòng</h2>
+        <form id="updateForm">
+            <div class="form-group">
+                <label for="updateId">ID Phòng cần cập nhật:</label>
+                <input type="number" id="updateId" name="updateId" value="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="updateTenPhong">Tên Phòng mới:</label>
+                <input type="text" id="updateTenPhong" name="updateTenPhong" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="updateDonVi">Đơn Vị mới:</label>
+                <select id="updateDonVi" name="updateDonVi" class="donvi-select" required onchange="onDonViChange('updateDonVi', 'updateIdTang')">
+                    <option value="">-- Chọn đơn vị --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="updateIdTang">ID Tầng mới:</label>
+                <select id="updateIdTang" name="updateIdTang" required>
+                    <option value="">-- Chọn tầng --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="updateAnhPhong">Ảnh phòng (đường dẫn):</label>
+                <input type="text" id="updateAnhPhong" name="updateAnhPhong" placeholder="/uploads/tenfile.jpg">
+            </div>
+            
+            <div class="form-group">
+                <label for="updateIdLoaiPhong">ID Loại Phòng mới:</label>
+                <input type="number" id="updateIdLoaiPhong" name="updateIdLoaiPhong" value="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="updateTrangThai">Trạng Thái mới:</label>
+                <select id="updateTrangThai" name="updateTrangThai" required>
+                    <option value="Trống">Trống</option>
+                    <option value="Đang sử dụng">Đang sử dụng</option>
+                    <option value="Bảo trì">Bảo trì</option>
+                    <option value="Đã đặt">Đã đặt</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn-warning">Cập nhật Phòng</button>
+        </form>
+        <div id="updateResult" class="result"></div>
+
+        <h3>Xóa Phòng</h3>
+        <div class="form-group">
+            <label for="deleteId">ID Phòng cần xóa:</label>
+            <input type="number" id="deleteId" name="deleteId" value="1">
+        </div>
+        <button onclick="deletePhong()" class="btn-danger">Xóa Phòng</button>
+        <div id="deleteResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>5. Tìm kiếm và lọc phòng</h2>
+        <div class="grid">
+            <div>
+                <h3>Tìm kiếm cơ bản</h3>
+                <div class="form-group">
+                    <label for="searchTen">Tìm theo tên phòng:</label>
+                    <input type="text" id="searchTen" name="searchTen" placeholder="P101">
+                </div>
+                <button onclick="searchByTen()" class="btn-info">Tìm theo tên</button>
+
+                <div class="form-group">
+                    <label for="searchKeyword">Tìm theo từ khóa:</label>
+                    <input type="text" id="searchKeyword" name="searchKeyword" placeholder="P">
+                </div>
+                <button onclick="searchByKeyword()" class="btn-info">Tìm theo từ khóa</button>
+
+                <div class="form-group">
+                    <label for="searchTrangThai">Tìm theo trạng thái:</label>
+                    <select id="searchTrangThai" name="searchTrangThai">
+                        <option value="Trống">Trống</option>
+                        <option value="Đang sử dụng">Đang sử dụng</option>
+                        <option value="Bảo trì">Bảo trì</option>
+                        <option value="Đã đặt">Đã đặt</option>
+                    </select>
+                </div>
+                <button onclick="searchByTrangThai()" class="btn-info">Tìm theo trạng thái</button>
+            </div>
+
+            <div>
+                <h3>Lọc theo trạng thái</h3>
+                <button onclick="getAvailableRooms()" class="btn-success">Phòng trống</button>
+                <button onclick="getBookedRooms()" class="btn-warning">Phòng đã đặt</button>
+                <button onclick="getOccupiedRooms()" class="btn-danger">Phòng đang sử dụng</button>
+                <button onclick="getMaintenanceRooms()" class="btn-info">Phòng bảo trì</button>
+
+                <h3>Thống kê</h3>
+                <button onclick="countAllPhong()" class="btn-info">Đếm tất cả phòng</button>
+                <button onclick="countByTrangThai()" class="btn-info">Đếm theo trạng thái</button>
+            </div>
+        </div>
+        <div id="searchResult" class="result"></div>
+    </div>
+
+    <div class="container">
+        <h2>6. Upload ảnh cho phòng</h2>
+        <form id="uploadImageForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="uploadPhongId">ID Phòng:</label>
+                <input type="number" id="uploadPhongId" name="uploadPhongId" value="1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="uploadFile">Chọn ảnh:</label>
+                <input type="file" id="uploadFile" name="uploadFile" accept="image/*" required>
+                <img id="uploadPreview" class="image-preview" alt="Preview">
+            </div>
+            
+            <button type="submit" class="btn-success">Upload Ảnh</button>
+        </form>
+        <div id="uploadResult" class="result"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/phong';
+
+        // Image preview
+        document.getElementById('file').addEventListener('change', function(e) {
+            previewImage(e.target, 'preview');
+        });
+
+        document.getElementById('uploadFile').addEventListener('change', function(e) {
+            previewImage(e.target, 'uploadPreview');
+        });
+
+        function previewImage(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        // Thêm biến lưu danh sách đơn vị và tầng
+        let donViList = [];
+        let tangList = [];
+
+        // Load danh sách đơn vị khi trang load
+        window.addEventListener('DOMContentLoaded', function() {
+            fetch('http://localhost:8080/api/donvi')
+                .then(res => res.json())
+                .then(data => {
+                    donViList = data;
+                    const donViSelects = document.querySelectorAll('.donvi-select');
+                    donViSelects.forEach(select => {
+                        select.innerHTML = '<option value="">-- Chọn đơn vị --</option>' +
+                            donViList.map(dv => `<option value="${dv.idDvi}">${dv.tenDvi}</option>`).join('');
+                    });
+                });
+        });
+
+        // Khi chọn đơn vị, load danh sách tầng thuộc đơn vị đó
+        function onDonViChange(selectId, tangSelectId) {
+            const idDvi = document.getElementById(selectId).value;
+            const tangSelect = document.getElementById(tangSelectId);
+            if (!idDvi) {
+                tangSelect.innerHTML = '<option value="">-- Chọn tầng --</option>';
+                return;
+            }
+            fetch(`http://localhost:8080/api/tang?donViId=${idDvi}`)
+                .then(res => res.json())
+                .then(data => {
+                    tangList = data;
+                    tangSelect.innerHTML = '<option value="">-- Chọn tầng --</option>' +
+                        tangList.map(tg => `<option value="${tg.idTang}">${tg.tenTang}</option>`).join('');
+                });
+        }
+
+        // 1. Tạo phòng cơ bản
+        document.getElementById('createBasicForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const donViId = document.getElementById('donVi').value;
+            const idTang = document.getElementById('idTang').value;
+
+            const data = {
+                tenPhong: document.getElementById('tenPhong').value,
+                idDvi: parseInt(donViId),
+                idTang: parseInt(idTang),
+                idLoaiPhong: parseInt(document.getElementById('idLoaiPhong').value),
+                trangThai: document.getElementById('trangThai').value
+            };
+            
+            fetch(API_BASE, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResult('createBasicResult', 'Thành công!', data, 'success');
+                document.getElementById('createBasicForm').reset();
+                document.getElementById('donVi').value = '';
+                document.getElementById('idTang').innerHTML = '<option value="">-- Chọn tầng --</option>';
+                document.getElementById('idLoaiPhong').value = '1';
+            })
+            .catch(error => showResult('createBasicResult', 'Lỗi!', error.message, 'error'));
+        });
+
+        // 1. Sửa form tạo phòng với ảnh: fetch POST về /api/phong
+        // (Chỉ cần sửa dòng fetch)
+        document.getElementById('createWithImageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const donViId = document.getElementById('donVi2').value;
+            const idTang = document.getElementById('idTang2').value;
+            const formData = new FormData();
+            formData.append('tenPhong', document.getElementById('tenPhong2').value);
+            formData.append('idDvi', parseInt(donViId));
+            formData.append('idTang', parseInt(idTang));
+            formData.append('idLoaiPhong', document.getElementById('idLoaiPhong2').value);
+            formData.append('trangThai', document.getElementById('trangThai2').value);
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length > 0) {
+                formData.append('file', fileInput.files[0]);
+            }
+            fetch(API_BASE, { // Sửa endpoint này
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResult('createWithImageResult', 'Thành công!', data, 'success');
+                document.getElementById('createWithImageForm').reset();
+                document.getElementById('donVi2').value = '';
+                document.getElementById('idTang2').innerHTML = '<option value="">-- Chọn tầng --</option>';
+                document.getElementById('idLoaiPhong2').value = '1';
+                document.getElementById('preview').style.display = 'none';
+            })
+            .catch(error => showResult('createWithImageResult', 'Lỗi!', error.message, 'error'));
+        });
+
+        // 3. Xem phòng
+        function getAllPhong() {
+            fetch(API_BASE)
+            .then(response => response.json())
+            .then(data => showResult('viewResult', 'Danh sách phòng:', data, 'success'))
+            .catch(error => showResult('viewResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function getAllPhongDetail() {
+            fetch(API_BASE + '/detail')
+            .then(response => response.json())
+            .then(data => showResult('viewResult', 'Chi tiết phòng:', data, 'success'))
+            .catch(error => showResult('viewResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function getPhongById() {
+            const id = document.getElementById('getById').value;
+            fetch(API_BASE + '/' + id)
+            .then(response => response.json())
+            .then(data => showResult('viewResult', 'Thông tin phòng:', data, 'success'))
+            .catch(error => showResult('viewResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function getPhongDetailById() {
+            const id = document.getElementById('getById').value;
+            fetch(API_BASE + '/' + id + '/detail')
+            .then(response => response.json())
+            .then(data => showResult('viewResult', 'Chi tiết phòng:', data, 'success'))
+            .catch(error => showResult('viewResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        // 4. Cập nhật phòng
+        document.getElementById('updateForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const id = document.getElementById('updateId').value;
+            const donViId = document.getElementById('updateDonVi').value;
+            const idTang = document.getElementById('updateIdTang').value;
+            const data = {
+                tenPhong: document.getElementById('updateTenPhong').value,
+                idTang: idTang ? parseInt(idTang) : null,
+                idLoaiPhong: parseInt(document.getElementById('updateIdLoaiPhong').value),
+                idDvi: donViId ? parseInt(donViId) : null,
+                anhPhong: document.getElementById('updateAnhPhong').value,
+                trangThai: document.getElementById('updateTrangThai').value
+            };
+            fetch(API_BASE + '/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                showResult('updateResult', 'Cập nhật thành công!', data, 'success');
+                document.getElementById('updateForm').reset();
+                document.getElementById('updateId').value = '1';
+                document.getElementById('updateDonVi').value = '';
+                document.getElementById('updateIdTang').innerHTML = '<option value="">-- Chọn tầng --</option>';
+                document.getElementById('updateIdLoaiPhong').value = '1';
+            })
+            .catch(error => showResult('updateResult', 'Lỗi!', error.message, 'error'));
+        });
+
+        // 5. Xóa phòng
+        function deletePhong() {
+            const id = document.getElementById('deleteId').value;
+            
+            fetch(API_BASE + '/' + id, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    showResult('deleteResult', 'Xóa thành công!', 'Phòng ID ' + id + ' đã được xóa', 'success');
+                } else {
+                    throw new Error('Không thể xóa phòng');
+                }
+            })
+            .catch(error => showResult('deleteResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        // 6. Tìm kiếm
+        function searchByTen() {
+            const tenPhong = document.getElementById('searchTen').value;
+            fetch(API_BASE + '/search/ten?tenPhong=' + encodeURIComponent(tenPhong))
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Kết quả tìm kiếm:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function searchByKeyword() {
+            const keyword = document.getElementById('searchKeyword').value;
+            fetch(API_BASE + '/search/keyword?keyword=' + encodeURIComponent(keyword))
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Kết quả tìm kiếm:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function searchByTrangThai() {
+            const trangThai = document.getElementById('searchTrangThai').value;
+            fetch(API_BASE + '/search/trangthai?trangThai=' + encodeURIComponent(trangThai))
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Kết quả tìm kiếm:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        // 7. Lọc theo trạng thái
+        function getAvailableRooms() {
+            fetch(API_BASE + '/available')
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Phòng trống:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function getBookedRooms() {
+            fetch(API_BASE + '/booked')
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Phòng đã đặt:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function getOccupiedRooms() {
+            fetch(API_BASE + '/occupied')
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Phòng đang sử dụng:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function getMaintenanceRooms() {
+            fetch(API_BASE + '/maintenance')
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Phòng bảo trì:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        // 8. Thống kê
+        function countAllPhong() {
+            fetch(API_BASE + '/count')
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Tổng số phòng:', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        function countByTrangThai() {
+            const trangThai = document.getElementById('searchTrangThai').value;
+            fetch(API_BASE + '/count/trangthai?trangThai=' + encodeURIComponent(trangThai))
+            .then(response => response.json())
+            .then(data => showResult('searchResult', 'Số phòng ' + trangThai + ':', data, 'success'))
+            .catch(error => showResult('searchResult', 'Lỗi!', error.message, 'error'));
+        }
+
+        // 9. Upload ảnh
+        document.getElementById('uploadImageForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('uploadPhongId').value;
+            const formData = new FormData();
+            formData.append('file', document.getElementById('uploadFile').files[0]);
+            
+            fetch(API_BASE + '/' + id + '/upload-image', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                showResult('uploadResult', 'Upload thành công!', data, 'success');
+                document.getElementById('uploadImageForm').reset();
+                document.getElementById('uploadPreview').style.display = 'none';
+            })
+            .catch(error => showResult('uploadResult', 'Lỗi!', error.message, 'error'));
+        });
+
+        // Helper function to show results
+        function showResult(elementId, title, data, type) {
+            const resultDiv = document.getElementById(elementId);
+            resultDiv.innerHTML = `
+                <h3>${title}</h3>
+                <pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>
+            `;
+            resultDiv.className = 'result ' + type;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Thiết Bị</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        h2 { color: #2c3e50; }
+        form, .section { margin-bottom: 24px; padding: 16px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-top: 8px; }
+        input, textarea { width: 100%; padding: 6px; margin-top: 2px; }
+        button { margin-top: 12px; padding: 8px 16px; }
+        pre { background: #f4f4f4; padding: 12px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <h1>Test API Thiết Bị</h1>
+
+    <div class="section">
+        <h2>Lấy tất cả thiết bị</h2>
+        <button onclick="getAllThietBi()">Lấy tất cả</button>
+        <pre id="allThietBiResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Lấy thiết bị theo ID</h2>
+        <input type="number" id="getIdTb" placeholder="Nhập ID thiết bị">
+        <button onclick="getThietBiById()">Lấy thiết bị</button>
+        <pre id="getThietBiResult"></pre>
+    </div>
+
+    <form id="createThietBiForm">
+        <h2>Thêm thiết bị mới</h2>
+        <label>Tên thiết bị: <input type="text" id="createTenTb" required></label>
+        <label>Mô tả: <textarea id="createMoTa"></textarea></label>
+        <button type="submit">Thêm thiết bị</button>
+        <pre id="createThietBiResult"></pre>
+    </form>
+
+    <form id="updateThietBiForm">
+        <h2>Cập nhật thiết bị</h2>
+        <label>ID thiết bị: <input type="number" id="updateIdTb" required></label>
+        <label>Tên thiết bị: <input type="text" id="updateTenTb" required></label>
+        <label>Mô tả: <textarea id="updateMoTa"></textarea></label>
+        <button type="submit">Cập nhật</button>
+        <pre id="updateThietBiResult"></pre>
+    </form>
+
+    <div class="section">
+        <h2>Xóa thiết bị</h2>
+        <input type="number" id="deleteIdTb" placeholder="Nhập ID thiết bị">
+        <button onclick="deleteThietBi()">Xóa thiết bị</button>
+        <pre id="deleteThietBiResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Tìm kiếm thiết bị theo từ khóa</h2>
+        <input type="text" id="searchKeyword" placeholder="Nhập từ khóa (tên hoặc mô tả)">
+        <button onclick="searchThietBi()">Tìm kiếm</button>
+        <pre id="searchThietBiResult"></pre>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8080/api/thietbi';
+
+        function getAllThietBi() {
+            fetch(API)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('allThietBiResult').textContent = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function getThietBiById() {
+            const id = document.getElementById('getIdTb').value;
+            if (!id) return;
+            fetch(`${API}/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('getThietBiResult').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(() => {
+                    document.getElementById('getThietBiResult').textContent = 'Không tìm thấy hoặc lỗi.';
+                });
+        }
+
+        document.getElementById('createThietBiForm').onsubmit = function(e) {
+            e.preventDefault();
+            const tenTb = document.getElementById('createTenTb').value;
+            const moTa = document.getElementById('createMoTa').value;
+            fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tenTb, moTa })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('createThietBiResult').textContent = JSON.stringify(data, null, 2);
+                getAllThietBi();
+            });
+        };
+
+        document.getElementById('updateThietBiForm').onsubmit = function(e) {
+            e.preventDefault();
+            const idTb = document.getElementById('updateIdTb').value;
+            const tenTb = document.getElementById('updateTenTb').value;
+            const moTa = document.getElementById('updateMoTa').value;
+            fetch(`${API}/${idTb}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idTb, tenTb, moTa })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('updateThietBiResult').textContent = JSON.stringify(data, null, 2);
+                getAllThietBi();
+            });
+        };
+
+        function deleteThietBi() {
+            const id = document.getElementById('deleteIdTb').value;
+            if (!id) return;
+            fetch(`${API}/${id}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.status === 204) {
+                        document.getElementById('deleteThietBiResult').textContent = 'Đã xóa thành công!';
+                        getAllThietBi();
+                    } else {
+                        document.getElementById('deleteThietBiResult').textContent = 'Không tìm thấy hoặc lỗi.';
+                    }
+                });
+        }
+
+        function searchThietBi() {
+            const keyword = document.getElementById('searchKeyword').value;
+            if (!keyword) return;
+            fetch(`${API}/search?keyword=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('searchThietBiResult').textContent = JSON.stringify(data, null, 2);
+                });
+        }
+    </script>
+</body>
+</html>

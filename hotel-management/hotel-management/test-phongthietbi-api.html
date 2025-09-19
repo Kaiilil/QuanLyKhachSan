@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Quản lý Thiết Bị Trong Phòng</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 24px; }
+        h2 { color: #2c3e50; }
+        form, .section { margin-bottom: 24px; padding: 16px; border: 1px solid #ccc; border-radius: 8px; }
+        label { display: block; margin-top: 8px; }
+        input, select { width: 100%; padding: 6px; margin-top: 2px; }
+        button { margin-top: 12px; padding: 8px 16px; }
+        pre { background: #f4f4f4; padding: 12px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+    <h1>Test API Quản lý Thiết Bị Trong Phòng</h1>
+
+    <div class="section">
+        <h2>Lấy tất cả thiết bị trong các phòng</h2>
+        <button onclick="getAllPhongThietBi()">Lấy tất cả</button>
+        <pre id="allPhongThietBiResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Lấy thiết bị trong phòng theo ID</h2>
+        <input type="number" id="getIdPTB" placeholder="Nhập ID PhongThietBi">
+        <button onclick="getPhongThietBiById()">Lấy</button>
+        <pre id="getPhongThietBiResult"></pre>
+    </div>
+
+    <form id="createPhongThietBiForm">
+        <h2>Thêm thiết bị vào phòng</h2>
+        <label>ID Phòng: <input type="number" id="createIdPhong" required></label>
+        <label>ID Thiết bị: <input type="number" id="createIdTb" required></label>
+        <label>Số lượng: <input type="number" id="createSoLuong" required></label>
+        <button type="submit">Thêm</button>
+        <pre id="createPhongThietBiResult"></pre>
+    </form>
+
+    <form id="updatePhongThietBiForm">
+        <h2>Cập nhật số lượng thiết bị trong phòng</h2>
+        <label>ID PhongThietBi: <input type="number" id="updateIdPTB" required></label>
+        <label>ID Phòng: <input type="number" id="updateIdPhong" required></label>
+        <label>ID Thiết bị: <input type="number" id="updateIdTb" required></label>
+        <label>Số lượng: <input type="number" id="updateSoLuong" required></label>
+        <button type="submit">Cập nhật</button>
+        <pre id="updatePhongThietBiResult"></pre>
+    </form>
+
+    <div class="section">
+        <h2>Xóa thiết bị khỏi phòng</h2>
+        <input type="number" id="deleteIdPTB" placeholder="Nhập ID PhongThietBi">
+        <button onclick="deletePhongThietBi()">Xóa</button>
+        <pre id="deletePhongThietBiResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Lấy tất cả thiết bị trong 1 phòng</h2>
+        <input type="number" id="searchIdPhong" placeholder="Nhập ID phòng">
+        <button onclick="getByPhong()">Lấy</button>
+        <pre id="getByPhongResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Lấy tất cả phòng có 1 thiết bị</h2>
+        <input type="number" id="searchIdTb" placeholder="Nhập ID thiết bị">
+        <button onclick="getByThietBi()">Lấy</button>
+        <pre id="getByThietBiResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Lấy thông tin thiết bị trong phòng theo ID phòng và ID thiết bị</h2>
+        <input type="number" id="searchIdPhong2" placeholder="Nhập ID phòng">
+        <input type="number" id="searchIdTb2" placeholder="Nhập ID thiết bị">
+        <button onclick="getByPhongAndThietBi()">Lấy</button>
+        <pre id="getByPhongAndThietBiResult"></pre>
+    </div>
+
+    <script>
+        const API = 'http://localhost:8080/api/phongthietbi';
+
+        function getAllPhongThietBi() {
+            fetch(API)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('allPhongThietBiResult').textContent = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function getPhongThietBiById() {
+            const id = document.getElementById('getIdPTB').value;
+            if (!id) return;
+            fetch(`${API}/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('getPhongThietBiResult').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(() => {
+                    document.getElementById('getPhongThietBiResult').textContent = 'Không tìm thấy hoặc lỗi.';
+                });
+        }
+
+        document.getElementById('createPhongThietBiForm').onsubmit = function(e) {
+            e.preventDefault();
+            const idPhong = document.getElementById('createIdPhong').value;
+            const idTb = document.getElementById('createIdTb').value;
+            const soLuong = document.getElementById('createSoLuong').value;
+            fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idPhong, idTb, soLuong })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('createPhongThietBiResult').textContent = JSON.stringify(data, null, 2);
+                getAllPhongThietBi();
+            });
+        };
+
+        document.getElementById('updatePhongThietBiForm').onsubmit = function(e) {
+            e.preventDefault();
+            const id = document.getElementById('updateIdPTB').value;
+            const idPhong = document.getElementById('updateIdPhong').value;
+            const idTb = document.getElementById('updateIdTb').value;
+            const soLuong = document.getElementById('updateSoLuong').value;
+            fetch(`${API}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, idPhong, idTb, soLuong })
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('updatePhongThietBiResult').textContent = JSON.stringify(data, null, 2);
+                getAllPhongThietBi();
+            });
+        };
+
+        function deletePhongThietBi() {
+            const id = document.getElementById('deleteIdPTB').value;
+            if (!id) return;
+            fetch(`${API}/${id}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.status === 204) {
+                        document.getElementById('deletePhongThietBiResult').textContent = 'Đã xóa thành công!';
+                        getAllPhongThietBi();
+                    } else {
+                        document.getElementById('deletePhongThietBiResult').textContent = 'Không tìm thấy hoặc lỗi.';
+                    }
+                });
+        }
+
+        function getByPhong() {
+            const idPhong = document.getElementById('searchIdPhong').value;
+            if (!idPhong) return;
+            fetch(`${API}/phong/${idPhong}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('getByPhongResult').textContent = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function getByThietBi() {
+            const idTb = document.getElementById('searchIdTb').value;
+            if (!idTb) return;
+            fetch(`${API}/thietbi/${idTb}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('getByThietBiResult').textContent = JSON.stringify(data, null, 2);
+                });
+        }
+
+        function getByPhongAndThietBi() {
+            const idPhong = document.getElementById('searchIdPhong2').value;
+            const idTb = document.getElementById('searchIdTb2').value;
+            if (!idPhong || !idTb) return;
+            fetch(`${API}/phong-thietbi?idPhong=${idPhong}&idTb=${idTb}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('getByPhongAndThietBiResult').textContent = JSON.stringify(data, null, 2);
+                });
+        }
+    </script>
+</body>
+</html>

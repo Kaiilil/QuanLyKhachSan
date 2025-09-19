@@ -1,0 +1,144 @@
+@startuml Hotel Management ERD
+
+!define table(x) class x << (T,#FFAAAA) >>
+!define primary_key(x) <b>x</b>
+!define foreign_key(x) <i>x</i>
+
+title Sơ đồ ERD - Hệ thống Quản lý Khách sạn
+
+table(tb_CongTy) {
+  primary_key(MACTY) : NVARCHAR(50)
+  TENCTY : NVARCHAR(100)
+}
+
+table(tb_DonVi) {
+  primary_key(IDDVI) : INT AUTO_INCREMENT
+  TENDVI : NVARCHAR(100)
+  foreign_key(MACTY) : NVARCHAR(50)
+}
+
+table(tb_Tang) {
+  primary_key(IDTANG) : INT AUTO_INCREMENT
+  TENTANG : NVARCHAR(50)
+  foreign_key(IDDVI) : INT
+}
+
+table(tb_LoaiPhong) {
+  primary_key(IDLOAIPHONG) : INT AUTO_INCREMENT
+  TENLOAIPHONG : NVARCHAR(100)
+  GIA : DECIMAL(10,2)
+  MOTA : NVARCHAR(255)
+}
+
+table(tb_Phong) {
+  primary_key(IDPHONG) : INT AUTO_INCREMENT
+  TENPHONG : NVARCHAR(50)
+  foreign_key(IDTANG) : INT
+  foreign_key(IDLOAIPHONG) : INT
+  foreign_key(IDDVI) : INT
+  TRANGTHAI : NVARCHAR(50)
+}
+
+table(tb_KhachHang) {
+  primary_key(IDKH) : INT AUTO_INCREMENT
+  HOTEN : NVARCHAR(100)
+  CCCD : VARCHAR(20)
+  SDT : VARCHAR(15)
+  DIACHI : NVARCHAR(255)
+}
+
+table(tb_DatPhong) {
+  primary_key(IDDATPHONG) : INT AUTO_INCREMENT
+  foreign_key(IDPHONG) : INT
+  foreign_key(IDKH) : INT
+  NGAYDAT : DATE
+  NGAYTRA : DATE
+  TRANGTHAI : NVARCHAR(50)
+}
+
+table(tb_ThanhToan) {
+  primary_key(IDTT) : INT AUTO_INCREMENT
+  foreign_key(IDDATPHONG) : INT
+  NGAYTT : DATE
+  NGAYDAT : DATE
+  NGAYTRA : DATE
+  SOTIEN : DECIMAL(10,2)
+  HINHTHUCTT : NVARCHAR(50)
+  TRANGTHAI : NVARCHAR(50)
+}
+
+table(tb_Roles) {
+  primary_key(IDROLE) : INT
+  ROLENAME : NVARCHAR(50)
+}
+
+table(tb_Users) {
+  primary_key(IDUSER) : INT AUTO_INCREMENT
+  USERNAME : NVARCHAR(50)
+  PASSWORD : NVARCHAR(255)
+  EMAIL : NVARCHAR(100)
+  foreign_key(IDROLE) : INT
+}
+
+table(tb_DuDoanKhach) {
+  primary_key(ID) : INT AUTO_INCREMENT
+  THANG : INT
+  NAM : INT
+  foreign_key(MACTY) : NVARCHAR(50)
+  foreign_key(IDDVI) : INT
+  DUDOAN_SOLUONGKHACH : INT
+}
+
+table(tb_ThietBi) {
+  primary_key(IDTB) : INT AUTO_INCREMENT
+  TENTB : NVARCHAR(100)
+  MOTA : NVARCHAR(255)
+}
+
+table(tb_Phong_ThietBi) {
+  primary_key(ID) : INT AUTO_INCREMENT
+  foreign_key(IDPHONG) : INT
+  foreign_key(IDTB) : INT
+  SOLUONG : INT
+}
+
+table(tb_LichSuPhong) {
+  primary_key(IDLSP) : INT AUTO_INCREMENT
+  foreign_key(IDPHONG) : INT
+  THOIGIAN : DATETIME
+  TRANGTHAI : NVARCHAR(50)
+}
+
+table(tb_SanPham) {
+  primary_key(IDSP) : INT AUTO_INCREMENT
+  TENSP : NVARCHAR(100)
+  DONGIA : DECIMAL(10,2)
+  MOTA : NVARCHAR(255)
+}
+
+table(tb_DatPhong_SanPham) {
+  primary_key(IDDP_SP) : INT AUTO_INCREMENT
+  foreign_key(IDDATPHONG) : INT
+  foreign_key(IDSP) : INT
+  SOLUONG : INT
+}
+
+' Relationships
+tb_CongTy ||--o{ tb_DonVi : "1:N"
+tb_DonVi ||--o{ tb_Tang : "1:N"
+tb_DonVi ||--o{ tb_Phong : "1:N"
+tb_Tang ||--o{ tb_Phong : "1:N"
+tb_LoaiPhong ||--o{ tb_Phong : "1:N"
+tb_Phong ||--o{ tb_DatPhong : "1:N"
+tb_KhachHang ||--o{ tb_DatPhong : "1:N"
+tb_DatPhong ||--o{ tb_ThanhToan : "1:N"
+tb_Roles ||--o{ tb_Users : "1:N"
+tb_CongTy ||--o{ tb_DuDoanKhach : "1:N"
+tb_DonVi ||--o{ tb_DuDoanKhach : "1:N"
+tb_Phong ||--o{ tb_Phong_ThietBi : "1:N"
+tb_ThietBi ||--o{ tb_Phong_ThietBi : "1:N"
+tb_Phong ||--o{ tb_LichSuPhong : "1:N"
+tb_DatPhong ||--o{ tb_DatPhong_SanPham : "1:N"
+tb_SanPham ||--o{ tb_DatPhong_SanPham : "1:N"
+
+@enduml 

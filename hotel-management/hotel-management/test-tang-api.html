@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Tầng</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; background: #f5f5f5; padding: 20px; }
+        .container { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #0001; padding: 24px; margin-bottom: 24px; }
+        .form-group { margin-bottom: 12px; }
+        label { font-weight: bold; display: block; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; }
+        button { padding: 8px 18px; border-radius: 4px; border: none; background: #007bff; color: #fff; font-weight: bold; cursor: pointer; margin-right: 8px; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 16px; padding: 12px; border-radius: 4px; background: #f8f9fa; border: 1px solid #eee; }
+        h2 { color: #007bff; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Thêm tầng mới</h2>
+    <form id="addTangForm">
+        <div class="form-group">
+            <label for="tenTang">Tên tầng:</label>
+            <input type="text" id="tenTang" name="tenTang" required>
+        </div>
+        <div class="form-group">
+            <label for="idDvi">ID Đơn vị:</label>
+            <input type="number" id="idDvi" name="idDvi" required>
+        </div>
+        <button type="submit">Thêm tầng</button>
+    </form>
+    <div id="addTangResult" class="result"></div>
+</div>
+
+<div class="container">
+    <h2>Xem tất cả tầng</h2>
+    <button onclick="getAllTang()">Lấy tất cả tầng</button>
+    <div id="allTangResult" class="result"></div>
+</div>
+
+<div class="container">
+    <h2>Xem tầng theo ID</h2>
+    <input type="number" id="getTangId" placeholder="Nhập ID tầng">
+    <button onclick="getTangById()">Lấy tầng</button>
+    <div id="getTangResult" class="result"></div>
+</div>
+
+<div class="container">
+    <h2>Cập nhật tầng</h2>
+    <form id="updateTangForm">
+        <div class="form-group">
+            <label for="updateIdTang">ID tầng:</label>
+            <input type="number" id="updateIdTang" name="updateIdTang" required>
+        </div>
+        <div class="form-group">
+            <label for="updateTenTang">Tên tầng mới:</label>
+            <input type="text" id="updateTenTang" name="updateTenTang" required>
+        </div>
+        <div class="form-group">
+            <label for="updateIdDvi">ID Đơn vị mới:</label>
+            <input type="number" id="updateIdDvi" name="updateIdDvi" required>
+        </div>
+        <button type="submit">Cập nhật tầng</button>
+    </form>
+    <div id="updateTangResult" class="result"></div>
+</div>
+
+<div class="container">
+    <h2>Xóa tầng</h2>
+    <input type="number" id="deleteTangId" placeholder="Nhập ID tầng">
+    <button onclick="deleteTang()">Xóa tầng</button>
+    <div id="deleteTangResult" class="result"></div>
+</div>
+
+<div class="container">
+    <h2>Tìm kiếm tầng theo tên</h2>
+    <input type="text" id="searchTenTang" placeholder="Nhập tên tầng">
+    <button onclick="searchTangByTen()">Tìm kiếm</button>
+    <div id="searchTangResult" class="result"></div>
+</div>
+
+<div class="container">
+    <h2>Đếm tổng số tầng</h2>
+    <button onclick="countTang()">Đếm tầng</button>
+    <div id="countTangResult" class="result"></div>
+</div>
+
+<script>
+const API_BASE = 'http://localhost:8080/api/tang';
+
+// Thêm tầng mới
+const addTangForm = document.getElementById('addTangForm');
+addTangForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = {
+        tenTang: document.getElementById('tenTang').value,
+        idDvi: parseInt(document.getElementById('idDvi').value)
+    };
+    fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => showResult('addTangResult', data))
+    .catch(err => showResult('addTangResult', err.message));
+    addTangForm.reset();
+});
+
+// Lấy tất cả tầng
+function getAllTang() {
+    fetch(API_BASE)
+        .then(res => res.json())
+        .then(data => showResult('allTangResult', data))
+        .catch(err => showResult('allTangResult', err.message));
+}
+
+// Lấy tầng theo ID
+function getTangById() {
+    const id = document.getElementById('getTangId').value;
+    fetch(`${API_BASE}/${id}`)
+        .then(res => res.json())
+        .then(data => showResult('getTangResult', data))
+        .catch(err => showResult('getTangResult', err.message));
+}
+
+// Cập nhật tầng
+const updateTangForm = document.getElementById('updateTangForm');
+updateTangForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('updateIdTang').value;
+    const data = {
+        tenTang: document.getElementById('updateTenTang').value,
+        idDvi: parseInt(document.getElementById('updateIdDvi').value)
+    };
+    fetch(`${API_BASE}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => showResult('updateTangResult', data))
+    .catch(err => showResult('updateTangResult', err.message));
+    updateTangForm.reset();
+});
+
+// Xóa tầng
+function deleteTang() {
+    const id = document.getElementById('deleteTangId').value;
+    fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
+        .then(res => {
+            if (res.status === 204) showResult('deleteTangResult', 'Xóa thành công!');
+            else showResult('deleteTangResult', 'Không tìm thấy hoặc lỗi!');
+        })
+        .catch(err => showResult('deleteTangResult', err.message));
+}
+
+// Tìm kiếm tầng theo tên
+function searchTangByTen() {
+    const ten = document.getElementById('searchTenTang').value;
+    fetch(`${API_BASE}/search/ten?tenTang=${encodeURIComponent(ten)}`)
+        .then(res => res.json())
+        .then(data => showResult('searchTangResult', data))
+        .catch(err => showResult('searchTangResult', err.message));
+}
+
+// Đếm tổng số tầng
+function countTang() {
+    fetch(`${API_BASE}/count`)
+        .then(res => res.json())
+        .then(data => showResult('countTangResult', data))
+        .catch(err => showResult('countTangResult', err.message));
+}
+
+function showResult(id, data) {
+    document.getElementById(id).innerHTML = `<pre>${typeof data === 'object' ? JSON.stringify(data, null, 2) : data}</pre>`;
+}
+</script>
+</body>
+</html>
